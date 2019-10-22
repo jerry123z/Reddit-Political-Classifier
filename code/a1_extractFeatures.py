@@ -34,8 +34,7 @@ def extract1(comment):
         feats : numpy Array, a 173-length vector of floating point features (only the first 29 are expected to be filled, here)
     '''
     feats = np.zeros(173+1)
-    words = get_words(comment["body"])
-    tags = get_tags(comment["body"])
+    words, tags = sentence_split(comment)
     feats[0] = first_person_pronouns(words)
     feats[1] = second_person_pronouns(words)
     feats[2] = third_person_pronouns(words)
@@ -75,21 +74,15 @@ def extract1(comment):
     return feats
 
 
-def get_words(comment):
-    comment = comment.replace("\n ", "")
-    tokens = comment.strip().split(' ')
-    tokens = list(map(lambda a: a.split("/")[0], tokens))
-    return tokens
-
-
-def get_tags(comment):
-    comment = comment.replace("\n ", "")
-    tokens = comment.strip().split(' ')
-    # bandaid fix for bad Part 1
-    if tokens == [""]:
-        tokens = ["/"]
-    tokens = list(map(lambda a: a.split("/")[-1], tokens))
-    return tokens
+def sentence_split(comment):
+    words = []
+    tags = []
+    word_list = comment.split()
+    for word in word_list:
+        temp_list = word.rsplit('/', 1)
+        words.append(temp_list[0])
+        tags.append(temp_list[1])
+    return words, tags
 
 
 def first_person_pronouns(words):

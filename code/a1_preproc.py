@@ -30,30 +30,39 @@ def preproc1( comment , steps=range(1,11)):
 
     modComm = comment
     if 1 in steps:
-        modComm = re.sub(re.compile("\n"), "", modComm)
+        # Remove newline characters
+        modComm = re.sub(re.compile("\n"), " ", modComm)
     if 2 in steps:
+        "remove html escape characters"
         modComm = html.unescape(modComm)
     if 3 in steps:
+        "remove hyperlinks"
         http_pattern = re.compile(r"http\S+(\s)?")
         modComm = re.sub(http_pattern, "", modComm)
         www_pattern = re.compile(r"www.\S+(\s)?")
         modComm = re.sub(www_pattern, "", modComm)
     if 4 in steps:
+        "remove punctuation"
         punctuation = r"""!"#$%&()*+,-./:;<=>?@[\]^_`{|}~"""
         punctuation_pattern = re.compile("([" + punctuation + r"])+(\s)*?")
         modComm = re.sub(punctuation_pattern, " "+ r'\1' + " ", modComm)
     if 5 in steps:
+        # fix clitics
         modComm = re.sub("'", " '", modComm)
         modComm = re.sub("n 't", " n't", modComm)
     if 6 in steps:
+        # POS Tag each word using spacy
         word_list = []
         doc = nlp(modComm)
         for token in doc:
             word_list.append(token.text + "/" + token.tag_)
         modComm = " ".join(word_list)
     if 7 in steps:
+        # remove stopwords
         modComm = re.sub("|".join(stopwords), "", modComm, flags=re.IGNORECASE)
+        modComm = " ".join(modComm.split())
     if 8 in steps:
+        # use spacy to apply lemmatization
         token_list = modComm.split(" ")
         token_list = list(filter(lambda a: a != '', token_list))
         word_list = []
@@ -68,6 +77,7 @@ def preproc1( comment , steps=range(1,11)):
             output_list.append(token.lemma_ + "/" + token.tag_)
         modComm = " ".join(output_list)
     if 9 in steps:
+        # add newline between each sentence
         token_list = modComm.split(" ")
         token_list = list(filter(lambda a: a != '', token_list))
         if len(token_list) != 0:
@@ -82,6 +92,7 @@ def preproc1( comment , steps=range(1,11)):
             modComm = " ".join(token_list)
 
     if 10 in steps:
+        # change everything to lower case
         token_list = modComm.split(" ")
         token_list = list(filter(lambda a: a != '', token_list))
         for i in range(len(token_list)):

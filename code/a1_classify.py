@@ -45,8 +45,9 @@ def precision( C ):
         results.append(numerator / denominator)
     return results
 
-def class31(filename):
-    ''' This function performs experiment 3.1
+def train_classifiers(filename):
+    '''Make a 80/20 split, train 5 classifiers, then compute
+    Accuracy, Recall, Precision for each of them
 
     Parameters
        filename : string, the name of the npz file from Task 2
@@ -112,8 +113,8 @@ def class31(filename):
     return (X_train, X_test, y_train, y_test,max_index+1)
 
 
-def class32(X_train, X_test, y_train, y_test,iBest):
-    ''' This function performs experiment 3.2
+def vary_data_ammount(X_train, X_test, y_train, y_test,iBest):
+    '''Train the best model with increasing amount of data
 
     Parameters:
        X_train: NumPy array, with the selected training features
@@ -160,8 +161,8 @@ def class32(X_train, X_test, y_train, y_test,iBest):
 
     return (X_1k, y_1k)
 
-def class33(X_train, X_test, y_train, y_test, i, X_1k, y_1k):
-    ''' This function performs experiment 3.3
+def feature_analysis(X_train, X_test, y_train, y_test, i, X_1k, y_1k):
+    ''' Select the K best features from the corresponding model
 
     Parameters:
        X_train: NumPy array, with the selected training features
@@ -224,8 +225,8 @@ def class33(X_train, X_test, y_train, y_test, i, X_1k, y_1k):
         writer.writerow(acc_list)
     csvfile.close()
 
-def class34( filename, i ):
-    ''' This function performs experiment 3.4
+def cross_val( filename, i ):
+    ''' Perform 5-Fold cross validation
 
     Parameters
        filename : string, the name of the npz file from Task 2
@@ -284,16 +285,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     print("31")
-    X_train, X_test, y_train, y_test, iBest = class31(args.input)
+    X_train, X_test, y_train, y_test, iBest = train_classifiers(args.input)
     print("32")
-    X_1k, y_1k = class32(X_train, X_test, y_train, y_test, iBest)
+    X_1k, y_1k = vary_data_ammount(X_train, X_test, y_train, y_test, iBest)
     print("33")
-    class33(X_train, X_test, y_train, y_test, iBest, X_1k, y_1k)
+    feature_analysis(X_train, X_test, y_train, y_test, iBest, X_1k, y_1k)
     print("34")
-    class34(args.input, iBest)
+    cross_val(args.input, iBest)
 
-
-"""
-a = np.arange(50)
-print(a[[1,5,9]])
-"""
